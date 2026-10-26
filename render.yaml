@@ -32,7 +32,6 @@ services:
     name: supoclip-redis
     plan: free
     region: oregon
-    ipAllowList: []
     maxmemoryPolicy: noeviction
 
   - type: web
