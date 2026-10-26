@@ -1,0 +1,162 @@
+# Render blueprint for SupoClip.
+#
+# Two ways to use this repository on Render:
+#
+#   1. Automated (recommended): the "Render deploy" GitHub Actions workflow runs
+#      .render-ops/deploy.py, which creates everything below through the Render
+#      API and wires every environment variable automatically.
+#   2. This blueprint: in the Render dashboard choose "New > Blueprint" and pick
+#      this repository. Render will prompt for the values marked `sync: false`
+#      (they are the URLs of the services it is about to create, plus your key
+#      providers), because a blueprint cannot compute "https://<service>.onrender.com"
+#      for another service.
+#
+# Free plan notes: a Render free web service sleeps after 15 minutes without
+# traffic and has 0.5 GB of RAM. That is enough to explore SupoClip, but video
+# rendering wants a paid instance (2 GB+) and a persistent disk. The backend
+# image runs the ARQ worker inside the same container (RUN_WORKER_INLINE) so a
+# free deployment needs a single compute service. On a paid plan, deploy
+# backend/render.Dockerfile a second time as a worker and set
+# RUN_WORKER_INLINE=false on the API service.
+
+databases:
+  - name: supoclip-db
+    databaseName: supoclip
+    user: supoclip
+    plan: free
+    region: oregon
+    postgresMajorVersion: "16"
+
+services:
+  - type: keyvalue
+    name: supoclip-redis
+    plan: free
+    region: oregon
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
+
+  - type: web
+    name: supoclip-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    rootDir: backend
+    dockerfilePath: ./render.Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: SELF_HOST
+        value: "true"
+      # The backend rewrites postgres:// to the asyncpg driver itself.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: supoclip-db
+          property: connectionString
+      # Both components own users/tasks/sources tables, so the API keeps its
+      # models in their own schema of the shared database.
+      - key: DB_SCHEMA
+        value: supoclip_backend
+      - key: REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: supoclip-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: supoclip-redis
+          property: port
+      - key: RUN_WORKER_INLINE
+        value: "true"
+      - key: TEMP_DIR
+        value: /app/uploads
+      - key: MEDIA_STORAGE
+        value: local
+      - key: BACKEND_AUTH_SECRET
+        generateValue: true
+      - key: APP_SETTINGS_ENCRYPTION_KEY
+        generateValue: true
+      - key: AUTH_SIGNATURE_TTL_SECONDS
+        value: "300"
+      # Public URL of supoclip-web. Browsers never call this API directly (the
+      # Next.js route handlers proxy it), so this only matters for OAuth
+      # redirects and social publishing. Change it if Render had to suffix the
+      # service name.
+      - key: CORS_ORIGINS
+        value: https://supoclip-web.onrender.com
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://supoclip-web.onrender.com
+      - key: LLM
+        value: ollama:gpt-oss:120b
+      - key: RERANK_LLM
+        value: ollama:gpt-oss:20b
+      - key: OLLAMA_BASE_URL
+        value: https://ollama.com/v1
+      - key: OLLAMA_API_KEY
+        sync: false
+      - key: TRANSCRIPTION_PROVIDER
+        value: whisper
+      - key: WHISPER_MODEL_SIZE
+        value: base
+      # Optional: AssemblyAI is much faster than local Whisper. Add the key in
+      # the dashboard and set TRANSCRIPTION_PROVIDER=assemblyai to use it.
+      # - key: ASSEMBLY_AI_API_KEY
+      #   sync: false
+      - key: MAX_CLIPS
+        value: "10"
+      - key: MAX_VIDEO_DURATION
+        value: "5400"
+
+  - type: web
+    name: supoclip-web
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: frontend
+    buildCommand: npm install -g pnpm@10.27.0 && pnpm install --frozen-lockfile && pnpm run build
+    startCommand: pnpm exec prisma migrate deploy && pnpm exec next start -p $PORT
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 22.23.4
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: SELF_HOST
+        value: "true"
+      - key: NEXT_PUBLIC_SELF_HOST
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: supoclip-db
+          property: connectionString
+      # Used by the Next.js route handlers that proxy browser requests to the
+      # API. Change both if Render had to suffix the backend's service name.
+      - key: BACKEND_INTERNAL_URL
+        value: https://supoclip-backend.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        value: https://supoclip-backend.onrender.com
+      # This service's own public URL. Change it if Render had to suffix the
+      # name (better-auth signs sessions against this value).
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://supoclip-web.onrender.com
+      - key: BETTER_AUTH_URL
+        value: https://supoclip-web.onrender.com
+      - key: BETTER_AUTH_TRUSTED_ORIGINS
+        value: https://supoclip-web.onrender.com
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      # Must match the backend, otherwise signed API calls are rejected.
+      - key: BACKEND_AUTH_SECRET
+        fromService:
+          type: web
+          name: supoclip-backend
+          envVarKey: BACKEND_AUTH_SECRET
+      - key: APP_SETTINGS_ENCRYPTION_KEY
+        fromService:
+          type: web
+          name: supoclip-backend
+          envVarKey: APP_SETTINGS_ENCRYPTION_KEY
+      - key: DISABLE_SIGN_UP
+        value: "false"
+      - key: NEXT_PUBLIC_MAX_VIDEO_UPLOAD_BYTES
+        value: "4000000000"

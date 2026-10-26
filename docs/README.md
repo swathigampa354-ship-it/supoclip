@@ -17,6 +17,10 @@ If you are new to the project, start here:
   - Local development commands
   - First-run checklist
   - Production-minded setup notes
+- [Deploy on Render](./deploy-render.md)
+  - Automated provisioning with the Render API
+  - Blueprint deployment from the dashboard
+  - Free-plan expectations and paid-tier layout
 - [Configuration](./configuration.md)
   - Required API keys
   - DataFast analytics settings

@@ -104,6 +104,7 @@ Everything beyond this page lives in [`docs/`](docs/README.md):
 | Guide | What it covers |
 |---|---|
 | [Setup](docs/setup.md) | Docker-first install, local development, first-run checklist |
+| [Deploy on Render](docs/deploy-render.md) | One-command deployment to Render (Postgres, Key Value, API, web) |
 | [Configuration](docs/configuration.md) | Every environment variable, operating modes, provider options |
 | [App Guide](docs/app-guide.md) | Screens, workflows, admin features, hosted vs self-host |
 | [Architecture](docs/architecture.md) | How the frontend, API, worker, queue, and pipeline fit together |

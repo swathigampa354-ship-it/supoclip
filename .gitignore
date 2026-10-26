@@ -25,3 +25,8 @@ docs/youtube-provider-registry*.json
 
 # Local agent checkouts
 .claude/worktrees/
+
+# Render provisioning credentials (only ever force-added for a throwaway run)
+.render-ops/key.txt
+.render-ops/secrets.env
+.render-ops/state/

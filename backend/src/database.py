@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -14,8 +15,31 @@ from sqlalchemy.ext.asyncio import (
 # Load environment variables
 load_dotenv()
 
-DEFAULT_DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql+asyncpg://localhost:5432/supoclip"
+
+def normalize_database_url(url: str | None) -> str:
+    """Return an asyncpg-compatible URL.
+
+    Managed platforms (Render, Heroku, Railway, ...) hand out
+    ``postgres://`` or ``postgresql://`` URLs, which SQLAlchemy maps to the
+    psycopg2 driver. The backend is fully async, so rewrite those to the
+    asyncpg driver instead of making operators edit dashboard values.
+    """
+    if not url:
+        return DEFAULT_DATABASE_URL
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            return "postgresql+asyncpg://" + url[len(prefix):]
+    return url
+
+
+# Optional schema isolation. Two SupoClip components (the Next.js/Prisma
+# frontend and this backend) both own tables named users/tasks/sources, so a
+# shared database needs separate schemas. Empty (the default) keeps the
+# historical behaviour of using the connection's default schema.
+DB_SCHEMA = os.getenv("DB_SCHEMA", "").strip()
+
+DEFAULT_DATABASE_URL = normalize_database_url(
+    os.getenv("DATABASE_URL", "postgresql+asyncpg://localhost:5432/supoclip")
 )
 
 _database_url_override: str | None = None
@@ -30,7 +54,26 @@ class Base(DeclarativeBase):
     pass
 
 
+def _validated_schema() -> str:
+    """DB_SCHEMA as a safe SQL identifier, or an empty string."""
+    if not DB_SCHEMA:
+        return ""
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", DB_SCHEMA):
+        raise ValueError(
+            "DB_SCHEMA must be a plain Postgres identifier "
+            "(letters, digits and underscores, not starting with a digit)"
+        )
+    return DB_SCHEMA
+
+
 def _build_engine(database_url: str) -> AsyncEngine:
+    server_settings = {"idle_in_transaction_session_timeout": "300000"}
+    schema = _validated_schema()
+    if schema:
+        # Keep public in the path so extensions (uuid-ossp, pgcrypto) and
+        # built-ins resolved from the default schema keep working.
+        server_settings["search_path"] = f"{schema},public"
+
     return create_async_engine(
         database_url,
         echo=False,
@@ -43,14 +86,14 @@ def _build_engine(database_url: str) -> AsyncEngine:
         # any session parked mid-transaction this long is leaked, not legitimately
         # busy. Killing it returns the connection to the pool instead of letting
         # it accumulate toward QueuePool exhaustion.
-        connect_args={
-            "server_settings": {"idle_in_transaction_session_timeout": "300000"}
-        },
+        connect_args={"server_settings": server_settings},
     )
 
 
 def get_database_url() -> str:
-    return _database_url_override or os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
+    if _database_url_override:
+        return normalize_database_url(_database_url_override)
+    return normalize_database_url(os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL))
 
 
 def configure_database(
@@ -103,6 +146,9 @@ async def get_db():
 # Initialize database
 async def init_db():
     async with get_engine().begin() as conn:
+        schema = _validated_schema()
+        if schema:
+            await conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
         await conn.run_sync(Base.metadata.create_all)
         await conn.execute(
             text(
