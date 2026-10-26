@@ -660,9 +660,11 @@ def main() -> int:
         if redis_parts["password"]:
             backend_env["REDIS_PASSWORD"] = redis_parts["password"]
 
+        # NODE_ENV is deliberately absent: Render sets it to "production" for the
+        # running service, and forcing it during the build would make pnpm skip
+        # the devDependencies that `next build` needs.
         frontend_env = {
             "NODE_VERSION": "22.23.4",
-            "NODE_ENV": "production",
             "NEXT_TELEMETRY_DISABLED": "1",
             "DATABASE_URL": prisma_db_url,
             "BACKEND_INTERNAL_URL": backend_url,
