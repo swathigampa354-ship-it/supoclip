@@ -36,7 +36,7 @@ import traceback
 
 import requests
 
-API = "https://api.render.com/v1"
+API = os.environ.get("RENDER_API_BASE", "https://api.render.com/v1").rstrip("/")
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OPS_DIR = os.path.join(ROOT, ".render-ops")
 STATE_DIR = os.path.join(OPS_DIR, "state")
@@ -81,6 +81,10 @@ SECRET_ENV_NAMES = (
     "APP_SETTINGS_ENCRYPTION_KEY",
     "BETTER_AUTH_SECRET",
 )
+
+# Smoke-test tuning; defaults are generous because free instances cold-start.
+PROBE_ATTEMPTS = int(os.environ.get("RENDER_PROBE_ATTEMPTS", "4"))
+PROBE_TIMEOUT = int(os.environ.get("RENDER_PROBE_TIMEOUT", "90"))
 
 _SECRETS: list[str] = []
 
@@ -715,11 +719,12 @@ def main() -> int:
 
         # Smoke tests --------------------------------------------------------
         log("\nSmoke tests")
+        probe_kwargs = {"attempts": PROBE_ATTEMPTS, "timeout": PROBE_TIMEOUT}
         smoke = {
-            "backend_health": http_probe(f"{backend_url}/health"),
-            "backend_db": http_probe(f"{backend_url}/health/db"),
-            "backend_redis": http_probe(f"{backend_url}/health/redis"),
-            "frontend_root": http_probe(f"{frontend_url}/"),
+            "backend_health": http_probe(f"{backend_url}/health", **probe_kwargs),
+            "backend_db": http_probe(f"{backend_url}/health/db", **probe_kwargs),
+            "backend_redis": http_probe(f"{backend_url}/health/redis", **probe_kwargs),
+            "frontend_root": http_probe(f"{frontend_url}/", **probe_kwargs),
         }
         report["smoke"] = smoke
 
