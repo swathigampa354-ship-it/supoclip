@@ -1,0 +1,11 @@
+{
+  "mode": "deploy",
+  "region": "oregon",
+  "plan": "free",
+  "llm": "ollama:gpt-oss:120b",
+  "rerank_llm": "ollama:gpt-oss:20b",
+  "ollama_base_url": "https://ollama.com/v1",
+  "transcription_provider": "whisper",
+  "whisper_model": "base",
+  "poll_timeout_seconds": 2700
+}
