@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Kin is a family of AI agents that market your product on Reddit, X and LinkedIn. Join the waitlist.">
+<title>Kin — AI agents that market your product</title>
+<style>
+:root{--ink:#1d1b2a;--muted:#747181;--purple:#7558dc;--line:#e9e7ef;--paper:#fbfafd;--card:#fff;--dark:#211f2e;--nav:#fbfafdf2}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f1eff7;--muted:#a9a5b6;--line:#34313f;--paper:#17151f;--card:#211f2e;--dark:#0f0e15;--nav:#17151ff2}}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 Inter,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1120px,calc(100% - 40px));margin:auto}
+.bar{background:#211f2e;color:#eee;text-align:center;font-size:12px;padding:8px}.bar a{color:#d1c5ff;font-weight:700}
+.nav{height:66px;position:sticky;top:0;background:var(--nav);border-bottom:1px solid var(--line);backdrop-filter:blur(12px);z-index:9;display:flex;align-items:center;justify-content:space-between;padding:0 max(20px,calc((100% - 1120px)/2))}
+.logo{font-weight:800;font-size:21px;letter-spacing:-1px;display:flex;align-items:center;gap:9px}
+.mark{display:grid;grid-template-columns:repeat(2,9px);gap:3px;transform:rotate(-9deg)}.mark i{height:9px;background:#8066e5;border-radius:50% 2px 50% 2px}.mark i:nth-child(2){background:#b9a8ff}.mark i:nth-child(3){background:#9c84f2}
+.links{display:flex;gap:26px;color:var(--muted);font-size:13px}.links a:hover{color:var(--purple)}
+.btn{display:inline-flex;gap:8px;align-items:center;justify-content:center;background:var(--purple);color:#fff;border:0;border-radius:9px;padding:13px 20px;font:700 13px inherit;font-family:inherit;cursor:pointer;box-shadow:0 6px 18px #7558dc30}.btn:hover{background:#6044c6}
+.btn.sm{padding:9px 14px;font-size:12px}
+.hero{padding:70px 0 40px;display:grid;grid-template-columns:.95fr 1.05fr;gap:30px;align-items:center}
+.eyebrow{text-transform:uppercase;letter-spacing:.13em;font-size:11px;font-weight:750;color:var(--muted);margin-bottom:16px}
+h1{font-size:clamp(42px,6vw,68px);line-height:1.04;letter-spacing:-3.5px;margin:0 0 20px}
+.grad{background:linear-gradient(100deg,#7960df,#c77eae);color:transparent;background-clip:text;-webkit-background-clip:text}
+.lede{max-width:460px;color:var(--muted);font-size:16px;line-height:1.75}
+.wl{display:flex;gap:8px;margin:26px 0 12px;max-width:460px}
+.wl input{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:13px 14px;font:14px inherit;font-family:inherit}
+.wl input:focus{outline:2px solid var(--purple);outline-offset:1px}
+.msg{font-size:12px;color:#42a879;min-height:18px}.msg.err{color:#d2546a}
+.fine{font-size:12px;color:var(--muted)}
+.dash{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 25px 65px #30265a1c;padding:16px;transform:rotate(-1deg)}
+.dh{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:12px;font-size:13px;font-weight:700}.dh span{color:var(--muted);font-weight:400;font-size:11px}
+.feed{display:grid;gap:9px;padding-top:12px}
+.ev{display:flex;gap:11px;padding:11px;border-radius:9px;background:#f5f1ff;color:#554b75;font-size:12px;line-height:1.5}
+.ev:nth-child(2){background:#eff9f4;color:#466b59}.ev:nth-child(3){background:#eef5ff;color:#4b6380}.ev:nth-child(4){background:#fff4ed;color:#805d48}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ev{background:#2a2540;color:#d6cdf3}:root:not([data-theme="light"]) .ev:nth-child(n){background:#2a2540;color:#d6cdf3}}
+.ev b{flex:none;width:30px;height:30px;border-radius:8px;background:#fff;display:grid;place-items:center;font-size:12px;color:#333}
+.ev small{display:block;opacity:.65;font-size:10px;margin-top:2px}
+.section{padding:84px 0}.center{text-align:center}
+.heading{font-size:clamp(30px,4vw,40px);line-height:1.12;letter-spacing:-1.8px;margin:0 0 12px}
+.sub{max-width:600px;margin:0 auto;color:var(--muted);font-size:14px}
+.grid{display:grid;gap:14px;margin-top:34px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px}
+.num{color:var(--purple);font-size:12px;font-weight:800}
+.card h3{font-size:18px;letter-spacing:-.4px;margin:10px 0 6px}.card p{font-size:13px;color:var(--muted);line-height:1.7;margin:0}
+.dark{background:var(--dark);color:#fff}.dark .eyebrow{color:#beb4d5}.dark .sub{color:#bab7c4}
+.dark .card{background:#2b2937;border-color:#3c3948}.dark .card p{color:#bbb7c5}
+.ic{width:36px;height:36px;display:grid;place-items:center;border-radius:9px;background:#40384f;color:#c6b3ff;font-weight:800;font-size:13px}
+.term{font:12px/1.9 ui-monospace,monospace;background:#1c1b25;border:1px solid #454151;border-radius:9px;padding:16px;color:#ddd8e7;margin-top:18px;overflow-x:auto;white-space:pre}.term span{color:#a994f3}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 18px;margin-bottom:9px}
+summary{font-size:14px;font-weight:700;cursor:pointer}details p{font-size:13px;color:var(--muted);margin:10px 0 0}
+.faq{display:grid;grid-template-columns:.7fr 1.3fr;gap:50px}
+.cta{text-align:center;background:var(--dark);color:#fff;padding:76px 20px}.cta h2{font-size:clamp(32px,5vw,46px);letter-spacing:-2px;line-height:1.08;margin:0 0 12px}.cta p{color:#bbb7c4}
+.cta .wl{margin:24px auto 12px}.cta .wl input{background:#2b2937;border-color:#3c3948;color:#fff}
+.foot{padding:28px 0;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:760px){.links{display:none}.hero{grid-template-columns:1fr;padding:44px 0 20px}.g4,.g3,.g2{grid-template-columns:1fr}.g4{grid-template-columns:repeat(2,1fr)}.faq{grid-template-columns:1fr;gap:18px}.section{padding:60px 0}h1{letter-spacing:-2.5px}.wl{flex-direction:column}}
+</style></head><body>
+<div class="bar">Early access is opening in small batches. <a href="#join">Get on the list ↗</a></div>
+<header class="nav">
+<a class="logo" href="#top"><span class="mark"><i></i><i></i><i></i><i></i></span>Kin</a>
+<nav class="links"><a href="#how">How it works</a><a href="#agents">The agents</a><a href="#faq">FAQ</a></nav>
+<a class="btn sm" href="#join">Join waitlist</a>
+</header>
+<main id="top">
+<section class="wrap hero">
+<div>
+<div class="eyebrow">AI marketing, reimagined</div>
+<h1>A family of agents that <span class="grad">markets for you.</span></h1>
+<p class="lede">Point Kin at your product and a team of specialist agents promotes it on Reddit, X and LinkedIn, so you can get back to building.</p>
+<form class="wl" data-wl><input type="email" required placeholder="you@email.com" aria-label="Email address"><button class="btn" type="submit">Join waitlist →</button></form>
+<div class="msg" role="status"></div>
+<div class="fine">Free to join · No spam · One email when your spot opens</div>
+</div>
+<div class="dash" aria-label="Preview of the agent activity feed">
+<div class="dh">Kin workspace <span>Preview</span></div>
+<div class="feed">
+<div class="ev"><b>R</b><div>Reddit agent drafted a helpful reply for a thread in a relevant community<small>Waiting for your approval</small></div></div>
+<div class="ev"><b>X</b><div>X agent queued a short thread about your latest launch<small>Scheduled</small></div></div>
+<div class="ev"><b>in</b><div>LinkedIn agent wrote a founder-story post from your changelog<small>Draft ready</small></div></div>
+<div class="ev"><b>✦</b><div>Weekly digest: what each agent did and what got replies<small>Every Monday</small></div></div>
+</div></div>
+</section>
+
+<section class="section" id="how"><div class="wrap center">
+<div class="eyebrow">How it works</div>
+<h2 class="heading">From your link to live posts.</h2>
+<p class="sub">Four steps, and you stay in control the whole way.</p>
+<div class="grid g4" style="text-align:left">
+<div class="card"><div class="num">01</div><h3>Share your product</h3><p>Paste your website. Kin reads it and learns what you sell and who it's for.</p></div>
+<div class="card"><div class="num">02</div><h3>Meet your agents</h3><p>Each agent specializes in one platform and learns its norms and tone.</p></div>
+<div class="card"><div class="num">03</div><h3>Review or auto-pilot</h3><p>Approve every post, or let agents run on their own within your rules.</p></div>
+<div class="card"><div class="num">04</div><h3>See what works</h3><p>Get a simple report on what landed so the agents keep improving.</p></div>
+</div></div></section>
+
+<section class="section dark" id="agents"><div class="wrap center">
+<div class="eyebrow">The agents</div>
+<h2 class="heading">One agent per <span class="grad">platform.</span></h2>
+<p class="sub">Every network has its own culture. Each agent is built for one.</p>
+<div class="grid g3" style="text-align:left">
+<div class="card"><div class="ic">R</div><h3>Reddit agent</h3><p>Finds relevant conversations and writes genuinely useful replies that respect community rules.</p></div>
+<div class="card"><div class="ic">X</div><h3>X agent</h3><p>Turns your launches and ideas into posts and threads, timed for your audience.</p></div>
+<div class="card"><div class="ic">in</div><h3>LinkedIn agent</h3><p>Writes founder-voice posts that build credibility and bring in conversations.</p></div>
+</div>
+<div class="term"><span>$</span> kin connect https://your-product.com
+<span>✓</span> Product understood
+<span>✓</span> 3 agents ready: reddit · x · linkedin
+<span>→</span> Drafts waiting for review</div>
+</div></section>
+
+<section class="section"><div class="wrap center">
+<div class="eyebrow">Why Kin</div>
+<h2 class="heading">Marketing without the grind.</h2>
+<div class="grid g2" style="text-align:left">
+<div class="card"><h3>Built for solo builders</h3><p>No marketing team needed. Kin acts like a small department that works while you ship.</p></div>
+<div class="card"><h3>Human in the loop</h3><p>Approve, edit or reject anything before it goes out. Autonomy is something you turn on, not a default.</p></div>
+<div class="card"><h3>Native to each platform</h3><p>Posts that read like they belong, not like ads pasted everywhere.</p></div>
+<div class="card"><h3>Learns from results</h3><p>Agents adjust to what earns replies and clicks, week after week.</p></div>
+</div></div></section>
+
+<section class="section" id="faq"><div class="wrap faq">
+<div><div class="eyebrow">FAQ</div><h2 class="heading">Questions, answered.</h2></div>
+<div>
+<details><summary>When does Kin launch?</summary><p>We're letting people in gradually. Join the waitlist and you'll get an email when your spot opens.</p></details>
+<details><summary>Will it post without my approval?</summary><p>Only if you choose that. Review mode is the default.</p></details>
+<details><summary>Which platforms are supported?</summary><p>Reddit, X and LinkedIn first. More may follow.</p></details>
+<details><summary>How much will it cost?</summary><p>Pricing isn't final yet. Waitlist members will hear first.</p></details>
+</div></div></section>
+
+<section class="cta" id="join">
+<h2>Get early access to Kin.</h2>
+<p>Join the waitlist and be first in line.</p>
+<form class="wl" data-wl><input type="email" required placeholder="you@email.com" aria-label="Email address"><button class="btn" type="submit">Join waitlist →</button></form>
+<div class="msg" role="status"></div>
+</section>
+</main>
+<footer class="wrap foot"><span>© 2026 Kin</span><span>Made for builders who'd rather build.</span></footer>
+<script>
+// Supabase config (publishable key is safe to expose; RLS only allows inserts).
+var KIN_SB_URL='https://lbhwmrsfiuouejcierqf.supabase.co';
+var KIN_SB_KEY='sb_publishable_W2LI168791mcCnB8VouYPQ_bLhjcBa9';
+document.querySelectorAll('[data-wl]').forEach(function(f){
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var i=f.querySelector('input'),m=f.parentElement.querySelector('.msg'),b=f.querySelector('button'),v=i.value.trim().toLowerCase();
+    if(!/^\S+@\S+\.\S+$/.test(v)){m.textContent='Please enter a valid email.';m.className='msg err';return}
+    b.disabled=true;
+    fetch(KIN_SB_URL+'/rest/v1/kin_waitlist',{
+      method:'POST',
+      headers:{'apikey':KIN_SB_KEY,'Authorization':'Bearer '+KIN_SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({email:v})
+    }).then(function(r){
+      // 409 = already on the list; treat as success.
+      if(r.ok||r.status===409){m.textContent='You’re on the list. We’ll email you when your spot opens.';m.className='msg';i.value='';}
+      else throw new Error('HTTP '+r.status);
+    }).catch(function(){
+      m.textContent='Something went wrong. Please try again.';m.className='msg err';
+    }).then(function(){b.disabled=false});
+  });
+});
+</script>
+</body></html>
