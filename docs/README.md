@@ -54,6 +54,11 @@ If you are new to the project, start here:
   - Stuck tasks
   - Auth, fonts, billing, and YouTube issues
   - Performance and recovery guidance
+- [Cross-repo toolkit scan](./repo-toolkit-scan.md)
+  - What the other repos on this account contribute to video editing
+  - Reusable code: FCPXML handoff, thumbnail studio, audio-event detection, saliency scoring
+  - Export QC and encode recipes
+  - Licence and reuse notes
 
 ## What SupoClip Is
 
